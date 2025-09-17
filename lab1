@@ -1,0 +1,98 @@
+Table airports {
+  airport_id bigint [pk, increment]
+  airport_name varchar(255) [not null]
+  country varchar(100) [not null]
+  state varchar(100)
+  city varchar(100) [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table airlines {
+  airline_id bigint [pk, increment]
+  airline_code varchar(20) [not null, unique]
+  name varchar(255) [not null]
+  country varchar(100) [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table flights {
+  flight_id bigint [pk, increment]
+  departing_gate varchar(50)
+  arriving_gate varchar(50)
+  scheduled_departure_time timestamp [not null]
+  scheduled_arrival_time timestamp [not null]
+  actual_departure_time timestamp
+  actual_arrival_time timestamp
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  airline_id bigint [ref: > airlines.airline_id]
+  departure_airport_id bigint [ref: > airports.airport_id]
+  arrival_airport_id bigint [ref: > airports.airport_id]
+}
+
+Table passengers {
+  passenger_id bigint [pk, increment]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  gender varchar(20) [not null]
+  date_of_birth date [not null]
+  citizenship_country varchar(100) [not null]
+  residence_country varchar(100)
+  passport_number varchar(50) [unique, not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table bookings {
+  booking_id bigint [pk, increment]
+  flight_id bigint [ref: > flights.flight_id]
+  passenger_id bigint [ref: > passengers.passenger_id]
+  status varchar(50) [not null]
+  platform varchar(100) [not null] // Added booking platform
+  ticket_price numeric(10,2) [not null] // Added ticket price
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table booking_changes {
+  booking_change_id bigint [pk, increment]
+  booking_id bigint [ref: > bookings.booking_id]
+  change_description text [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table boarding_passes {
+  boarding_pass_id bigint [pk, increment]
+  seat varchar(10) [not null]
+  boarding_time timestamp [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  booking_id bigint [ref: > bookings.booking_id]
+}
+
+Table baggage {
+  baggage_id bigint [pk, increment]
+  weight numeric(6,2) [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  booking_id bigint [ref: > bookings.booking_id]
+}
+
+Table baggage_check {
+  baggage_check_id bigint [pk, increment]
+  check_result varchar(255) [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  booking_id bigint [ref: > bookings.booking_id]
+  passenger_id bigint [ref: > passengers.passenger_id]
+}
+
+Table security_checks {
+  security_check_id bigint [pk, increment]
+  check_result varchar(255) [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  passenger_id bigint [ref: > passengers.passenger_id]
+}
